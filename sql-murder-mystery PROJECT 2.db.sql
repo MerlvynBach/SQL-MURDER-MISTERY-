@@ -1,0 +1,73 @@
+--MURDER CASE
+-- FIRST WE GO THROUGH THE CRIME REPORT AND QUERY OUT THE EXACT MURDER CASE WE WANT TO SOLVE WITH THE LITTLE INFO WE HAVE
+
+SELECT *
+from crime_scene_report
+where city is 'SQL City' and date is 20180115 and type is 'murder'
+
+-- ON OPENING THE FILE WE FOUND OUT WHERE 2 WITNESSES, ONE LIVED AT THE LAST HOUSE OF NORTHEAST DRIVE WHILE THE OTHER AT FRANKLIN AVE 
+--WHICH WE QUERIED AND GOT THEIR INFORMATION IN THE NEXT TWO QUERIES DOWN
+
+SELECT *
+from person
+WHERE address_street_name is 'Northwestern Dr'
+order by address_number DESC LIMIT 1 
+
+SELECT *
+from person
+where address_street_name is 'Franklin Ave' AND name like 'Annabel%'
+
+-- AFTER GETTING BOTH WITNESS WE BROUGHT THEM IN FOR AN INTERVIEW WHICH IS INDICATED ON THE NEXT 2 QUERIES DOWN BELOW
+
+select person_id, transcript
+from interview 
+where person_id iS 16371
+
+select person_id, transcript
+from interview 
+where person_id iS 14887 
+
+--ON INTERVIEWING THEM WE GOT CLUES ABOUT THE KILLER 
+(-- get fit bag, gold membership , membership number starts with 48Z, plate number included H42W
+-- MURDERER WAS AT THE GYM JANUARY 9TH)
+  --WITH THAT WE WERE ABLE TO QUERY THE GYM RECORDS AND GYM CHECK-IN SEARCHING FOR A MATCH AND WE GOT A MATCH ID = 67318
+SELECT *
+FROM person
+WHERE ID = 67318  
+SELECT *
+FROM get_fit_now_member
+where membership_status IS 'gold' and id like '48Z%'
+
+SELECT *
+from get_fit_now_check_in
+WHERE check_in_date IS 20180109 AND membership_id LIKE '48Z%'
+  
+-- AFTER THAT WE QUERIED THE PERSON DATABASE AND RAN HIS ID AND HIS INFORMATION CAME UP
+  
+ SELECT *
+FROM get_fit_now_member 
+WHERE person_id = 67318
+  
+-- HIS NAME IS JEREMY BOWERS 
+-- HE WAS BROUGHT IN FOR INTERVIEW WHERE HE CONFESSED TO IT AS STATED IN THE QUERY BELOW
+
+select *
+from interview 
+where person_id iS 67318
+ 
+-- UPON HIS CONFESSION HE DISCLOSED TO US WITH BRIEF DETAILS ABOUT THE CAR OF THE PERSON WHO HIRED HIM   
+-- THIS WAS QUERIED THROUGH OUR DRIVERS LICENSE DATABASE AND WE FOUND A MATCH WITH HER LICENSE NUMBER
+  
+SELECT *
+FROM drivers_license
+WHERE hair_color  IS 'red' and car_make is 'Tesla' and height is 65
+
+-- THE LICENSE NUMBER WAS THEN QUERIED ON OUR PERSON DATABASE AND WE GOT THE PERSON FULL DETAILS
+SELECT *
+from person
+where license_id = 918773
+  
+--  RED KORB A FEMALE WHO LIVES AT NO 107 CAMERATA DRIVE WAS THE ONE WHO HIRED THE KILLERcrime_scene_report
+
+-- THE END
+  
